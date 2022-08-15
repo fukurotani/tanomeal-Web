@@ -1,5 +1,6 @@
 import colors from 'vuetify/es5/util/colors'
 
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -42,7 +43,7 @@ export default {
     '@nuxtjs/axios', '@nuxtjs/firebase'
   ],
   firebase: {
-    config: process.env.FIREBASE_CONFIG,
+    config: JSON.parse(process.env.FIREBASE_CONFIG),
     services: {
       auth: true, firestore: true,
     }
