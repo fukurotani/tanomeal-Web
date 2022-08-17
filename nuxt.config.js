@@ -45,7 +45,12 @@ export default {
   firebase: {
     config: JSON.parse(process.env.FIREBASE_CONFIG),
     services: {
-      auth: true, firestore: true,
+      auth: {
+        ssr: true,
+        initialize:{
+          onAuthStateChangedAction: 'accounts/onAuthStateChanged',
+        }
+      }, firestore: true,
     }
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -58,7 +63,7 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,
