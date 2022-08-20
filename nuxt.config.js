@@ -1,6 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
 
-
+const isDev = process.env.NODE_ENV === 'development'
+const useEmulators = true
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -40,17 +41,22 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios', '@nuxtjs/firebase'
+    '@nuxtjs/axios', '@nuxtjs/firebase','@nuxtjs/pwa'
   ],
   firebase: {
     config: JSON.parse(process.env.FIREBASE_CONFIG),
     services: {
       auth: {
         ssr: true,
+        emulatorPort: isDev && useEmulators ? 9099 : undefined,
+        disableEmulatorWarnings: false,
         initialize:{
           onAuthStateChangedAction: 'accounts/onAuthStateChanged',
         }
-      }, firestore: true,
+      }, firestore: {
+        emulatorPort: isDev && useEmulators ? 8080 : undefined,
+        emulatorHost: 'localhost',
+      },
     }
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -79,5 +85,22 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {}
+  build: {},
+  pwa: {
+    // disable the modules you don't need
+    meta: false,
+    icon: false,
+    // モジュールキーフォーム構成を省略すると、適切なデフォルトが適用されます
+    manifest: false,
+
+    workbox: {
+      importScripts: [
+        // ...
+        '/firebase-auth-sw.js'
+      ],
+      // HMR との競合を避けるため、ワークボックス モジュールはデフォルトでサービス ワーカーを開発環境にインストールしません。
+      //これはテスト用にのみ true に設定し、開発中はブラウザのキャッシュを常にクリアすることを忘れないでください
+      dev: process.env.NODE_ENV === 'development',
+    }
+  }
 }

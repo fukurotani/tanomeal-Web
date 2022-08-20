@@ -87,3 +87,6 @@ sw.*
 
 # Vim swap files
 *.swp
+/assets/firebase-auth-sw.js
+/assets/tanomeal-firebase-adminsdk-yn7ab-d8a4eec65c.json
+/static/firebase-auth-sw.js

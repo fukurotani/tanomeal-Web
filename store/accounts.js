@@ -14,23 +14,39 @@ export const mutations = {
     }
   }
 }
+export const getters = {
+  isLogin(state) {
+    return state.user != null
+  }
+}
 export const actions = {
-  async onAuthStateChanged({ commit }, { authUser }) {
+  async nuxtServerInit({ dispatch, commit }, { res }) {
+    if (res && res.locals && res.locals.user) {
+      const { allClaims: claims, idToken: token, ...authUser } = res.locals.user
+
+      await dispatch('onAuthStateChangedAction', {
+        authUser,
+        claims,
+        token
+      })
+    }
+  },
+  async onAuthStateChanged({ commit }, { authUser,claims }) {
+    console.log(authUser)
     if (!authUser) {
       commit('RESET_STORE')
       return
     }
     if (authUser && authUser.getIdToken) {
-
+      let idToken
       try {
-        const idToken = await authUser.getIdToken(true)
+        idToken = await authUser.getIdToken(true)
         console.info('idToken', idToken)
       } catch (e) {
         console.error(e)
       }
+      commit('SET_AUTH_USER', { authUser,  })
     }
-    commit('SET_AUTH_USER', { authUser })
+
   },
-  async userCreate(ctx, userData) {
-  }
 }

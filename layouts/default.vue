@@ -6,7 +6,7 @@
     >
       <v-toolbar-title>たのみ～る</v-toolbar-title>
       <v-spacer/>
-        <div  v-if="user">
+        <div  v-if="user!=null">
           <v-btn>
             <v-icon>
               mdi-account

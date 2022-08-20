@@ -20,6 +20,8 @@
 
 <script>
 export default {
+
+  middleware:"requireLogin",
   name: 'InspirePage'
 }
 </script>
