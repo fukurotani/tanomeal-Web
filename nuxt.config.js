@@ -37,6 +37,9 @@ export default {
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
   ],
+  /*router: {
+    middleware: 'requireLogin'
+  },*/
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [

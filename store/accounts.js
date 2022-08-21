@@ -12,6 +12,7 @@ export const mutations = {
       email: authUser.email,
       displayName: authUser.displayName
     }
+    console.log("SET")
   }
 }
 export const getters = {
@@ -20,17 +21,7 @@ export const getters = {
   }
 }
 export const actions = {
-  async nuxtServerInit({ dispatch, commit }, { res }) {
-    if (res && res.locals && res.locals.user) {
-      const { allClaims: claims, idToken: token, ...authUser } = res.locals.user
 
-      await dispatch('onAuthStateChangedAction', {
-        authUser,
-        claims,
-        token
-      })
-    }
-  },
   async onAuthStateChanged({ commit }, { authUser,claims }) {
     console.log(authUser)
     if (!authUser) {
@@ -45,8 +36,9 @@ export const actions = {
       } catch (e) {
         console.error(e)
       }
-      commit('SET_AUTH_USER', { authUser,  })
+
     }
+    commit('SET_AUTH_USER', { authUser,  })
 
   },
 }

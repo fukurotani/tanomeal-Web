@@ -98,6 +98,8 @@
 
 <script lang="ts">
 import Vue from "vue";
+import firebase from "firebase/compat";
+import FieldValue = firebase.firestore.FieldValue;
 
 
 export const Tabs = {
@@ -132,9 +134,9 @@ export default Vue.extend({
       if ((this.$refs.loginForm as Vue & { validate: () => boolean }).validate()) {
         this.formStatus = "作成中です"
         this.loginValid = false//ボタンをたくさん押すのを防ぐ
-        /* this.s().finally(()=>{
-          this.loginValid=true
-        })*/
+        this.loginAccount().finally(() => {
+          this.loginValid = true
+        })
       }
     },
     submitCreateForm() {
@@ -144,6 +146,39 @@ export default Vue.extend({
         this.createAccount().finally(() => {
           this.createValid = true
         })
+      }
+    },
+    async loginAccount() {
+      const userCredential=await this.$fire.auth.signInWithEmailAndPassword(this.email, this.password).catch((e) => {
+        const errorCode = e.code
+        switch (errorCode) {
+          //メールアドレスが無効な場合にスローされます。
+          case "auth/invalid-email": {
+            this.$data.formStatus = "そのメールアドレスは無効です"
+            break
+          }
+          //指定された電子メールに対応するユーザーが無効になっている場合にスローされます。
+          case "auth/user-disabled": {
+            this.$data.formStatus = "無効なユーザーです。お問い合わせください。"
+            break
+          }
+          //指定されたメールに対応するユーザーがいない場合にスローされます。
+          case "auth/user-not-found": {
+            this.$data.formStatus = "ユーザーが見つかりませんでした。"
+            break
+          }
+          //指定された電子メールのパスワードが無効である場合、または電子メールに対応するアカウントにパスワードが設定されていない場合にスローされます。
+          case "auth/wrong-password": {
+            this.$data.formStatus = "パスワードが違います"
+            break
+          }
+          default: {
+
+          }
+        }
+      })
+      if (userCredential&& userCredential.user!=null){
+        await this.$router.push("/")
       }
     },
     async createAccount() {
@@ -173,22 +208,21 @@ export default Vue.extend({
       })
 
       if (userCredential && userCredential.user != null) {//作成成功
-        const currentUser=userCredential.user
+        const currentUser = userCredential.user
         await currentUser.updateProfile({
           displayName: this.name,
         })
-        await this.$fire.firestore.doc("stores/"+currentUser.uid).set({
-          name:this.name
+        const storePath = "stores/" + currentUser.uid
+        await this.$fire.firestore.doc(storePath).set({
+          name: this.name
         })
-        await this.$fire.firestore.doc("schools/"+this.school).set({
-          name:this.name
+        await this.$fire.firestore.doc("schools/" + this.school).update({
+          name: this.name,
+          stores: FieldValue.arrayUnion(storePath)
         })
-
+        await this.$router.push("/")
       }
     },
-    loginAccount() {
-
-    }
   }
 })
 </script>

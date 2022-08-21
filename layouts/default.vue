@@ -6,17 +6,27 @@
     >
       <v-toolbar-title>たのみ～る</v-toolbar-title>
       <v-spacer/>
-        <div  v-if="user!=null">
-          <v-btn>
+
+      <v-menu offset-y v-if="user!=null">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            v-on="on">
             <v-icon>
               mdi-account
             </v-icon>
-            {{user.displayName}}
+            {{ user.displayName }}
           </v-btn>
-        </div>
-        <div v-else>
-          <v-btn href="/login">新規登録・ログイン</v-btn>
-        </div>
+        </template>
+        <v-list>
+          <v-list-item @click="logout">
+            <v-list-item-title>ログアウト</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <div v-else>
+        <v-btn href="/login">新規登録・ログイン</v-btn>
+      </div>
     </v-app-bar>
     <v-main>
       <v-container>
@@ -37,17 +47,20 @@ import Vue from "vue";
 export default Vue.extend({
   mounted() {
   },
-  computed:{
-    user(){
+  computed: {
+    user() {
       return this.$store.state.accounts.user
     }
   },
   name: 'DefaultLayout',
   data() {
-    return {
-
-    }
+    return {}
   },
+  methods:{
+    logout(){
+      this.$fire.auth.signOut()
+    }
+  }
 
 })
 </script>
