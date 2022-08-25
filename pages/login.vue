@@ -89,7 +89,7 @@
           </v-form>
         </v-tab-item>
       </v-tabs-items>
-      <div>
+      <div class="text-caption">
         {{ formStatus }}
       </div>
     </v-col>

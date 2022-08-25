@@ -1,93 +1,127 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="items"
-    :items-per-page="5"
-    class="elevation-1"
-  >
-    <template v-slot:item.disable="{ item }">
-      <v-switch
-        :value="!item.disable"
-        :disabled="item!=edit"
-      >
-      </v-switch>
-    </template>
-    <template v-slot:item.actions="{ item }">
+  <div>
+    <v-dialog v-model="dialog" persistent max-width="500">
 
-      <v-icon
-        class="mr-2"
-        @click="setEdit(item)"
-        v-if="item!=edit"
-      >
-        mdi-pencil
+      <ItemEditDialogBody v-if="dialog" @close="dialogClose" :initial-item="dialogItem"></ItemEditDialogBody>
+    </v-dialog>
+    <p class="text-h3">メニュー管理</p>
+
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      :items-per-page="-1"
+      class="elevation-1"
+      hide-default-footer
+    >
+      <template v-slot:item.enable="{ item }">
+        <v-switch
+          :value="item.enable"
+          :input-value="item.enable"
+          :label="item.enable?'販売中':'販売中止'"
+          disabled
+        >
+        </v-switch>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-btn fab small color="primary" @click.stop="dialogOpen(item)">
+          <v-icon>
+            mdi-pencil
+          </v-icon>
+        </v-btn>
+      </template>
+
+    </v-data-table>
+    <v-btn block color="primary" x-large @click.stop="dialogOpen(null)">
+      <v-icon>
+        mdi-plus
       </v-icon>
-      <div v-else>
-        <v-tooltip bottom>
-          <span>保存</span>
-          <template v-slot:activator="{on,attrs}">
-            <v-btn small color="green" fab v-on="on" v-bind="attrs" @click="save(item)">
-              <v-icon>
-                mdi-content-save
-              </v-icon>
-            </v-btn>
-          </template>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <span>キャンセル</span>
-          <template v-slot:activator="{on,attrs}">
-            <v-btn small color="orange" fab v-on="on" v-bind="attrs" @click="setEdit(null)">
-              <v-icon>
-                mdi-cancel
-              </v-icon>
-            </v-btn>
-          </template>
-        </v-tooltip>
-      </div>
-    </template>
-  </v-data-table>
+      商品を追加
+    </v-btn>
+  </div>
 </template>
 
 <script lang="ts">
 
 import Vue from "vue";
 import {DataTableHeader, DataTableItemProps} from "vuetify";
+import firebase from "firebase/compat";
+import FieldPath = firebase.firestore.FieldPath;
+import DocumentData = firebase.firestore.DocumentData;
+import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 
-export type ItemType = {
-  name: string,
-  price: number,
-  disable: boolean
+export class ItemType  {
+  name: string
+  price: number
+  enable: boolean
+  public constructor(name:string,price:number,enable:boolean) {
+    this.name=name
+    this.price=price
+    this.enable=enable
+
+  }
+  static fromDoc(docData:DocumentSnapshot):ItemType{
+    const data=docData.data()
+    return new ItemType(docData.id, data?.price, data?.enable)
+  }
+
 }
 export default Vue.extend({
   name: "manageMenu",
+  mounted() {
+    this.$fire.firestore.collection(this.menus).onSnapshot((collectionSnapshot)=>{
+
+      const items=collectionSnapshot.docs.map((menu)=>{
+        return ItemType.fromDoc(menu)
+      })
+      this.items=items;
+    })
+  },
+  computed:{
+    menus(){
+      return `stores/${this.$store.state.accounts.user.uid}/menus/`
+    }
+  },
   data() {
     return {
-      edit: null as ItemType | null,
+      dialog: false,
+      dialogItem: null as ItemType | null,
       headers: [
         {
           text: '商品名',
           align: 'start',
-          sortable: false,
           value: 'name',
         },
         {text: '値段', value: 'price'},
-        {text: '販売中', value: 'disable'},
+        {text: '販売中', value: 'enable'},
         {text: '編集', value: 'actions', sortable: false},
       ] as Array<DataTableHeader>,
       items: [
         {
           name: "Aセット",
-          price: 100,
-          disable: false
+          price: 450,
+          enable: true
         } as ItemType
       ]
     }
   },
   methods: {
-    setEdit(item: ItemType) {
-      this.edit = item
+    dialogOpen(item: ItemType | null) {
+      this.dialogItem = item
+      this.dialog = true
     },
-    save(oldData:ItemType){
-
+    dialogClose(item?: ItemType) {
+      if (item) {
+        this.$fire.firestore.doc(`${this.menus}${item.name}`).set({
+          price: item.price,
+          enable: item.enable,
+        }).catch((error) => {
+          console.error(error)
+        })
+      } else {
+        //なにも変更されていない
+      }
+      this.dialogItem = null
+      this.dialog = false
     },
   }
 })

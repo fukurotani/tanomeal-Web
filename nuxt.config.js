@@ -8,7 +8,7 @@ export default {
     titleTemplate: '%s - tanomeal',
     title: 'tanomeal',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'ja'
     },
     meta: [
       { charset: 'utf-8' },

@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      {{ initialItem.name }}の設定画面
+      {{ initialItem?.name ?? "新商品" }}の設定画面
     </v-card-title>
     <v-card-text>
       <v-form
@@ -12,6 +12,7 @@
           label="商品名"
           v-model="itemName"
           :rules="[rules.required]"
+          :disabled="initialItem?.name!=null"
           required
         ></v-text-field>
         <v-text-field
@@ -22,7 +23,6 @@
         ></v-text-field>
         <v-switch
           v-model="itemEnable"
-          :rules="[rules.required]"
           :label="itemEnable?'販売':'中止' "
         ></v-switch>
       </v-form>
@@ -32,13 +32,13 @@
       <v-btn
         color="blue darken-1"
         text
-        @click="close"
+        @click.stop="close"
       >
         キャンセル
       </v-btn>
       <v-btn
         color="primary"
-        @click="save"
+        @click.stop="save"
       >
         <span v-if="$props.initialItem" :disabled="!isChanged">変更を保存</span><span v-else>商品を追加</span>
       </v-btn>
@@ -51,37 +51,57 @@ import Vue, {PropType} from "vue";
 import {ItemType} from "~/pages/manageMenu.vue";
 
 export default Vue.extend({
-  name: "ItemEditDialog",
+  name: "ItemEditDialogBody",
   props: {
     initialItem: {
-      type: Object as PropType<ItemType>,
+      type: Object as PropType<ItemType | null>,
+      default: null,
     },
   },
-  data(){
-    return{
-      valid:{
+  mounted() {
+    this.valid = null
+    this.itemName = this.$props.initialItem?.name ?? ""
+    this.itemPrice = this.$props.initialItem?.price ?? ""
+    this.itemEnable = this.$props.initialItem?.enable ?? true
+  },
 
-      },
+  data() {
+    return {
+      valid: null as HTMLFormElement|null,
+      itemName: this.$props.initialItem?.name ?? "",
+      itemPrice: this.$props.initialItem?.price ?? "",
+      itemEnable: this.$props.initialItem?.enable ?? true,
       rules: {
         required: (value: any) => !!value || '必須項目です',
         min: (v: any) => v.length >= 8 || '短すぎます',
-        number: (value: any) => {
-          return parseInt(value,10) !=NaN
-        }
+        number: (value: any) => !Number.isNaN(Number(value)) || '数字で指定しましょう'
       }
     }
-  },
+  }
+
+  ,
   computed: {
-    isChanged():boolean {
+    isChanged(): boolean {
       if (this.initialItem) {
-        return this.initialItem != {} as ItemType
-      }else return true
+        return this.initialItem != this.Item
+      } else return true
+    },
+    Item(): ItemType {
+      return {
+        name: this.itemName,
+        price: this.itemPrice,
+        enable: this.itemEnable
+      } as ItemType
     }
   },
   methods: {
+    close() {
+      this.$emit("close", null)
+    },
     save() {
-      const e = new Event("", {})
-      this.$emit("onsave", e)
+      if ((this.$refs.form as Vue&{validate:()=>boolean}).validate()) {
+        this.$emit("close", this.Item)
+      }
     }
   }
 })

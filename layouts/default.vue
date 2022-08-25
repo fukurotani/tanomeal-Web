@@ -4,7 +4,7 @@
       fixed
       app
     >
-      <v-toolbar-title>たのみ～る</v-toolbar-title>
+      <v-toolbar-title>たのみ～る 管理画面</v-toolbar-title>
       <v-spacer/>
 
       <v-menu offset-y v-if="user!=null">
@@ -24,9 +24,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <div v-else>
-        <v-btn href="/login">新規登録・ログイン</v-btn>
-      </div>
+      <v-btn v-else href="/login">新規登録・ログイン</v-btn>
     </v-app-bar>
     <v-main>
       <v-container>
@@ -56,8 +54,8 @@ export default Vue.extend({
   data() {
     return {}
   },
-  methods:{
-    logout(){
+  methods: {
+    logout() {
       this.$fire.auth.signOut()
     }
   }
