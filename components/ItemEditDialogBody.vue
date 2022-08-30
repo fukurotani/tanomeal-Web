@@ -25,6 +25,22 @@
           v-model="itemEnable"
           :label="itemEnable?'販売':'中止' "
         ></v-switch>
+        <v-slider
+          v-model="itemMaxAmount"
+          :max="255"
+          label="販売可能量"
+          :hint="`販売済み：${this.$props.initialItem?.nowAmount ?? 0}個`"
+          class="align-center"
+        >
+          <template v-slot:append>
+            <v-text-field
+              v-model="itemMaxAmount"
+              class="mt-0 pt-0"
+              type="number"
+              style="width: 60px"
+            ></v-text-field>
+          </template>
+        </v-slider>
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -63,14 +79,16 @@ export default Vue.extend({
     this.itemName = this.$props.initialItem?.name ?? ""
     this.itemPrice = this.$props.initialItem?.price ?? ""
     this.itemEnable = this.$props.initialItem?.enable ?? true
+    this.itemMaxAmount = this.$props.initialItem?.maxAmount ?? 0
   },
 
   data() {
     return {
-      valid: null as HTMLFormElement|null,
+      valid: null as HTMLFormElement | null,
       itemName: this.$props.initialItem?.name ?? "",
       itemPrice: this.$props.initialItem?.price ?? "",
       itemEnable: this.$props.initialItem?.enable ?? true,
+      itemMaxAmount: this.$props.initialItem?.maxAmount ?? 0,
       rules: {
         required: (value: any) => !!value || '必須項目です',
         min: (v: any) => v.length >= 8 || '短すぎます',
@@ -90,7 +108,9 @@ export default Vue.extend({
       return {
         name: this.itemName,
         price: this.itemPrice,
-        enable: this.itemEnable
+        enable: this.itemEnable,
+        nowAmount:this.$props.initialItem?.maxAmount,
+        maxAmount:this.itemMaxAmount,
       } as ItemType
     }
   },
@@ -99,7 +119,7 @@ export default Vue.extend({
       this.$emit("close", null)
     },
     save() {
-      if ((this.$refs.form as Vue&{validate:()=>boolean}).validate()) {
+      if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
         this.$emit("close", this.Item)
       }
     }

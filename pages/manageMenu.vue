@@ -22,6 +22,17 @@
         >
         </v-switch>
       </template>
+      <template v-slot:item.amount="{ item }">
+        <v-progress-linear
+          :value="((item.nowAmount??0)/item.maxAmount)*100"
+
+          background-color="success"
+          color="error"
+          height="25"
+        >
+          販売済み:<strong>{{ item.nowAmount??0}}/{{item.maxAmount}}</strong>
+        </v-progress-linear>
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-btn fab small color="primary" @click.stop="dialogOpen(item)">
           <v-icon>
@@ -49,35 +60,41 @@ import FieldPath = firebase.firestore.FieldPath;
 import DocumentData = firebase.firestore.DocumentData;
 import DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 
-export class ItemType  {
+export class ItemType {
   name: string
   price: number
   enable: boolean
-  public constructor(name:string,price:number,enable:boolean) {
-    this.name=name
-    this.price=price
-    this.enable=enable
+  nowAmount: number
+  maxAmount: number
 
+  public constructor(name: string, price: number, enable: boolean, nowAmount: number, maxAmount: number) {
+    this.name = name
+    this.price = price
+    this.enable = enable
+    this.nowAmount = nowAmount
+    this.maxAmount = maxAmount
   }
-  static fromDoc(docData:DocumentSnapshot):ItemType{
-    const data=docData.data()
-    return new ItemType(docData.id, data?.price, data?.enable)
+
+  static fromDoc(docData: DocumentSnapshot): ItemType {
+    const data = docData.data()
+    return new ItemType(docData.id, data?.price, data?.enable, data?.nowAmount, data?.maxAmount)
   }
 
 }
+
 export default Vue.extend({
   name: "manageMenu",
   mounted() {
-    this.$fire.firestore.collection(this.menus).onSnapshot((collectionSnapshot)=>{
+    this.$fire.firestore.collection(this.menus).onSnapshot((collectionSnapshot) => {
 
-      const items=collectionSnapshot.docs.map((menu)=>{
+      const items = collectionSnapshot.docs.map((menu) => {
         return ItemType.fromDoc(menu)
       })
-      this.items=items;
+      this.items = items;
     })
   },
-  computed:{
-    menus(){
+  computed: {
+    menus() {
       return `stores/${this.$store.state.accounts.user.uid}/menus/`
     }
   },
@@ -93,15 +110,10 @@ export default Vue.extend({
         },
         {text: '値段', value: 'price'},
         {text: '販売中', value: 'enable'},
+        {text: '在庫', value: 'amount'},
         {text: '編集', value: 'actions', sortable: false},
-      ] as Array<DataTableHeader>,
-      items: [
-        {
-          name: "Aセット",
-          price: 450,
-          enable: true
-        } as ItemType
-      ]
+      ] as DataTableHeader[],
+      items: [] as ItemType[]
     }
   },
   methods: {
@@ -114,7 +126,8 @@ export default Vue.extend({
         this.$fire.firestore.doc(`${this.menus}${item.name}`).set({
           price: item.price,
           enable: item.enable,
-        }).catch((error) => {
+          maxAmount: item.maxAmount,
+        },{merge:true}).catch((error) => {
           console.error(error)
         })
       } else {

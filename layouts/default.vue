@@ -6,7 +6,6 @@
     >
       <v-toolbar-title>たのみ～る 管理画面</v-toolbar-title>
       <v-spacer/>
-
       <v-menu offset-y v-if="user!=null">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -27,7 +26,7 @@
       <v-btn v-else href="/login">新規登録・ログイン</v-btn>
     </v-app-bar>
     <v-main>
-      <v-container>
+      <v-container fluid>
         <Nuxt/>
       </v-container>
     </v-main>

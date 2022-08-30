@@ -31,7 +31,7 @@ export const actions = {
     if (authUser && authUser.getIdToken) {
       let idToken
       try {
-        idToken = await authUser.getIdToken(true)
+        idToken = await authUser.getIdToken(true)//for ios https://firebase.google.com/docs/reference/swift/firebaseauth/api/reference/Classes/User#getidtoken
         console.info('idToken', idToken)
       } catch (e) {
         console.error(e)

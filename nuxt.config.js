@@ -5,8 +5,8 @@ const useEmulators = true
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - tanomeal',
-    title: 'tanomeal',
+    titleTemplate: 'たのみ～る',
+    title: 'たのみ～る',
     htmlAttrs: {
       lang: 'ja'
     },
@@ -23,12 +23,15 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
-
+  serverMiddleware: [
+    { path: '/api/paypay', handler: 'serverMiddleware/paypay' },
+  ],
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [{ src: 'plugins/vue-qrcode-reader', ssr: false }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
+  ssr:false,
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
@@ -50,7 +53,7 @@ export default {
     config: JSON.parse(process.env.FIREBASE_CONFIG),
     services: {
       auth: {
-        ssr: true,
+       // ssr: true,
         emulatorPort: isDev && useEmulators ? 9099 : undefined,
         disableEmulatorWarnings: false,
         initialize:{
@@ -89,7 +92,7 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
-  pwa: {
+  /*pwa: {
     // disable the modules you don't need
     meta: false,
     icon: false,
@@ -105,5 +108,5 @@ export default {
       //これはテスト用にのみ true に設定し、開発中はブラウザのキャッシュを常にクリアすることを忘れないでください
       dev: process.env.NODE_ENV === 'development',
     }
-  }
+  }*/
 }
