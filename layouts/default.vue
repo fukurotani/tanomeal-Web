@@ -4,7 +4,7 @@
       fixed
       app
     >
-      <v-toolbar-title>たのみ～る 管理画面</v-toolbar-title>
+      <v-toolbar-title @click="$router.push('/')">たのみ～る 管理画面</v-toolbar-title>
       <v-spacer/>
       <v-menu offset-y v-if="user!=null">
         <template v-slot:activator="{ on, attrs }">

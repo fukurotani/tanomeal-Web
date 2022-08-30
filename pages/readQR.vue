@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="7">
+    <v-col :cols="$vuetify.breakpoint.smAndDown?12:7" >
       <qrcode-stream ref="a" v-resize="onResize" class="qrcode-area" :camera="isCameraOff?'off':camera"
                      :track="paintOutline"
                      @init="onInit"
@@ -14,7 +14,7 @@
       </qrcode-stream>
     </v-col>
     <v-spacer></v-spacer>
-    <v-col cols="4">
+    <v-col :cols="$vuetify.breakpoint.smAndDown?12:4">
       <div class="text-h3">読み取り結果</div>
       <v-card v-if="orderData">
         <v-card-title class="subheading font-weight-bold">

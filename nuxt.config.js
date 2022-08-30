@@ -20,11 +20,11 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-
+  target: 'static',
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
   serverMiddleware: [
-    { path: '/api/paypay', handler: 'serverMiddleware/paypay' },
+ //   { path: '/api/paypay', handler: 'serverMiddleware/paypay' },
   ],
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [{ src: 'plugins/vue-qrcode-reader', ssr: false }],
@@ -91,7 +91,17 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: {
+    extend(config, ctx) {
+      config.module.rules.push({
+        test: /\.(ogg|mp3|wav|mpe?g)$/i,
+        loader: 'file-loader',
+        options: {
+          name: '[path][name].[ext]',
+        },
+      })
+    },
+  },
   /*pwa: {
     // disable the modules you don't need
     meta: false,

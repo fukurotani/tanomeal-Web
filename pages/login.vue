@@ -2,18 +2,16 @@
   <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
       <v-tabs
-        v-model="tab">
+        :value="tab">
         <v-tabs-slider/>
-        <v-tab :key="0">
+        <v-tab href="#0">
           ログイン
         </v-tab>
-        <v-tab :key="1">
+        <v-tab href="#1">
           新規登録
         </v-tab>
-      </v-tabs>
-      <v-tabs-items v-model="tab">
         <v-tab-item
-          :key="0">
+          value="0">
           <v-form
             ref="loginForm"
             v-model="loginValid"
@@ -45,7 +43,7 @@
 
         </v-tab-item>
         <v-tab-item
-          :key="1">
+          value="1">
           <v-form
             ref="createForm"
             v-model="createValid"
@@ -88,7 +86,10 @@
             </v-btn>
           </v-form>
         </v-tab-item>
-      </v-tabs-items>
+      </v-tabs>
+
+
+
       <div class="text-caption">
         {{ formStatus }}
       </div>
@@ -100,6 +101,7 @@
 import Vue from "vue";
 import firebase from "firebase/compat";
 import FieldValue = firebase.firestore.FieldValue;
+import {Context} from "@nuxt/types";
 
 
 export const Tabs = {
@@ -108,6 +110,10 @@ export const Tabs = {
 }
 export default Vue.extend({
   name: "login",
+  watchQuery:["mode"],
+mounted() {
+  console.log(this.$route.query.mode);
+},
   data() {
     return {
       school: "",
@@ -117,7 +123,7 @@ export default Vue.extend({
       password: "",
       name: "",
       showPassword: false,
-      tab: null,
+      tab: this.$route.query.mode,
       formStatus: "",
       rules: {
         required: (value: any) => !!value || '必須項目です',
