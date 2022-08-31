@@ -77,7 +77,7 @@ export default Vue.extend({
   mounted() {
     this.valid = null
     this.itemName = this.$props.initialItem?.name ?? ""
-    this.itemPrice = this.$props.initialItem?.price ?? ""
+    this.itemPrice = this.$props.initialItem?.price ?? 0
     this.itemEnable = this.$props.initialItem?.enable ?? true
     this.itemMaxAmount = this.$props.initialItem?.maxAmount ?? 0
   },
@@ -86,11 +86,11 @@ export default Vue.extend({
     return {
       valid: null as HTMLFormElement | null,
       itemName: this.$props.initialItem?.name ?? "",
-      itemPrice: this.$props.initialItem?.price ?? "",
+      itemPrice: this.$props.initialItem?.price ?? 0,
       itemEnable: this.$props.initialItem?.enable ?? true,
       itemMaxAmount: this.$props.initialItem?.maxAmount ?? 0,
       rules: {
-        required: (value: any) => !!value || '必須項目です',
+        required: (value: any) => (!!value||value===0) || '必須項目です',
         min: (v: any) => v.length >= 8 || '短すぎます',
         number: (value: any) => !Number.isNaN(Number(value)) || '数字で指定しましょう'
       }
@@ -107,7 +107,7 @@ export default Vue.extend({
     Item(): ItemType {
       return {
         name: this.itemName,
-        price: this.itemPrice,
+        price: Number(this.itemPrice) ,
         enable: this.itemEnable,
         nowAmount:this.$props.initialItem?.maxAmount,
         maxAmount:this.itemMaxAmount,

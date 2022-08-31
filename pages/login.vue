@@ -7,7 +7,7 @@
         <v-tab href="#0">
           ログイン
         </v-tab>
-        <v-tab href="#1">
+        <v-tab disabled href="#1">
           新規登録
         </v-tab>
         <v-tab-item
@@ -54,8 +54,8 @@
               :rules="[rules.required]"
               filled
               name="input-sh"
-              :items="['zhJWaJ1t9M4XOzhssK1i']"
-              label="学校名(DocID)"
+              :items="['RpCv5CvdUbc8E4Bw8xjh']"
+              label="学校ID(学校作成機能は未実装のため候補から選んでください)"
             ></v-autocomplete>
             <v-text-field
               v-model="name"
@@ -87,6 +87,14 @@
           </v-form>
         </v-tab-item>
       </v-tabs>
+      <div class="text-body-1">
+        CCCのみなさんへ
+        アカウント新規作成機能にバグがあり、
+        恥ずかしながら急遽、デモ用として使えるアカウントを用意いたしました。
+        何卒よろしくお願いいたします。
+        メールアドレス:tanomeal@example.com
+        パスワード:iCZnpZi3p4gzFN4
+      </div>
 
 
 
@@ -218,11 +226,11 @@ mounted() {
         await currentUser.updateProfile({
           displayName: this.name,
         })
-        const storePath = "stores/" + currentUser.uid
+        const storePath = "test-stores/" + "UnCfA9Wug5eUWQsScHwF"
         await this.$fire.firestore.doc(storePath).set({
           name: this.name
         })
-        await this.$fire.firestore.doc("schools/" + this.school).update({
+        await this.$fire.firestore.doc("test-schools/" + this.school).update({
           name: this.name,
           stores: FieldValue.arrayUnion(storePath)
         })

@@ -79,12 +79,14 @@ export default Vue.extend({
         if (change.type === "added") {
 
           console.log("New city: ", change.doc.data());
-          const o = orderFromDoc(change.doc)/*change.doc.data() as Order
-          o.orderId = change.doc.id*/
+          const o = orderFromDoc(change.doc)
+          o.orderId = change.doc.id
           if (!o.accept_flag) {
             this.orders.push(o)
-            this.addAction(o.orderId!!)
-            this.playNoti()
+            if(this.doneFirstSync){
+              this.addAction(o.orderId!!)
+              this.playNoti()
+            }
           }
         }
         if (change.type === "modified") {
@@ -101,12 +103,13 @@ export default Vue.extend({
           this.orders = this.orders.filter(item => item.orderId != change.doc.id)
         }
       })
-
+      if (!this.doneFirstSync)this.doneFirstSync=true
     })
+
   },
   computed: {
     ordersRef() {
-      return `stores/${this.$store.state.accounts.user.uid}/orders/`
+      return `test-stores/${this.$store.state.accounts.user.uid}/orders/`
     },
     itemsData() {//アイテムごとの表
       const r = [] as { name: string, amount: number }[]
@@ -134,7 +137,7 @@ export default Vue.extend({
     },
     addAction(orderId:string){
        let index= this.highLightElements.push(orderId)
-      window. setTimeout(()=>{
+      setTimeout(()=>{
         this.highLightElements.splice(index-1,1)
       },5000)
     }
@@ -151,6 +154,7 @@ export default Vue.extend({
         },
         {text: '数量', value: 'amount'}
       ] as Array<DataTableHeader>,
+      doneFirstSync:false,
       ordersHeader: [
         {
           text: '注文ID',

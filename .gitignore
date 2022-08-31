@@ -91,3 +91,6 @@ sw.*
 /assets/tanomeal-firebase-adminsdk-yn7ab-d8a4eec65c.json
 /static/firebase-auth-sw.js
 /tanomeal-firebase-adminsdk-yn7ab-30a957c950.json
+/.firebaserc
+/firebase.json
+/.firebase/hosting.ZGlzdA.cache

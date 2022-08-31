@@ -95,7 +95,7 @@ export default Vue.extend({
   },
   computed: {
     menus() {
-      return `stores/${this.$store.state.accounts.user.uid}/menus/`
+      return `test-stores/${this.$store.state.accounts.user.uid}/menus/`
     }
   },
   data() {
@@ -124,7 +124,7 @@ export default Vue.extend({
     dialogClose(item?: ItemType) {
       if (item) {
         this.$fire.firestore.doc(`${this.menus}${item.name}`).set({
-          price: item.price,
+          price:item.price as number,
           enable: item.enable,
           maxAmount: item.maxAmount,
         },{merge:true}).catch((error) => {

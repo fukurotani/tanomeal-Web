@@ -26,7 +26,9 @@
           <v-list-item>
             <v-list-item-content>注文商品:</v-list-item-content>
             <v-list-item-content class="align-end">
-              {{ orderData.items.toString() }}
+              {{ Object.entries(orderData.items).map(([name, amount]) => {
+              return name + ":" + amount
+            }).toString() }}
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -84,7 +86,7 @@ export default Vue.extend({
   },
   computed: {
     ordersRef() {
-      return `stores/${this.$store.state.accounts.user.uid}/orders/`
+      return `test-stores/${this.$store.state.accounts.user.uid}/orders/`
     },
   },
   methods: {

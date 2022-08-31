@@ -1,7 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
 
 const isDev = process.env.NODE_ENV === 'development'
-const useEmulators = true
+const useEmulators = false
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -102,6 +102,16 @@ export default {
       })
     },
   },
+  pwa:{
+    icon:false,
+    manifest: {
+      lang: 'ja',
+      name: 'たのみ～る 店舗側管理',
+      short_name: 'たのみ～る',
+      description: 'たのみ～るの店舗側管理ページです',
+      display: 'standalone',
+    },
+  }
   /*pwa: {
     // disable the modules you don't need
     meta: false,

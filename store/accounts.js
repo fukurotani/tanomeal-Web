@@ -8,7 +8,7 @@ export const mutations = {
 
   SET_AUTH_USER: (state, { authUser }) => {
     state.user = {
-      uid: authUser.uid,
+      uid: "UnCfA9Wug5eUWQsScHwF",//応急処置
       email: authUser.email,
       displayName: authUser.displayName
     }
